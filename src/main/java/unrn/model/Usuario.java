@@ -16,6 +16,7 @@ public class Usuario {
 
     private final String nombre;
     private final List<Tweet> tweets;
+    
 
     public Usuario(String nombre) {
         assertNombreValido(nombre);
@@ -70,4 +71,6 @@ public class Usuario {
     public boolean equals(Usuario usuario) {
         return nombre.equals(usuario.nombre);
     }
+
+
 }

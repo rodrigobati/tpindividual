@@ -1,6 +1,28 @@
+## Rol:
+
+Actuás como un Ingeniero de Software Senior especializado en arquitecturas Monoliticas e integracion con Keycloak
+
+##
+
+Este proyecto fue consolidado para resolver el trabajo practico "TP INDIVIDUAL — MINI TWITTER".
+
+Guia:
+https://blog.christianposta.com/microservices/the-hardest-part-about-microservices-data/
+
+guias repositorios:
+https://github.com/enriquemolinari/taller-persistencia-apiweb
+https://github.com/enriquemolinari/taller-jpahibernate
+https://github.com/enriquemolinari/taller-react-agenda-telefonica
+https://github.com/hmunoz/springboot-sso
+https://github.com/hmunoz/react-sso
+https://gitlab.com/public-unrn/apigateway
+https://notebooklm.google.com/notebook/22e98de2-0584-40ef-b5d0-cf34e1d7c3d2
+
 # Descripcion general
 
 - Este es un proyecto escrito en Java 23 utilizando el paradigma orientado a objetos.
+- Usa Spring Boot 3.1 como framework principal.
+- Usa JPA/Hibernate para persistencia de datos en base de datos relacional.
 - El modelo de dominio es donde se implementan todas las reglas de negocio.
 
 ## Estructura de Carpetas
@@ -111,3 +133,20 @@ void beforeEach() {
 ```
 
 - No incluyas casos de tests que pueden ser testeados con tests unitarios.
+
+El Front-end React usa Keycloak para login y obtiene tokens.
+
+# Seguridad con Keycloak y Spring Boot
+
+Spring Boot:
+
+Configurado como Resource Server OAuth2 contra tu realm de Keycloak.
+
+Los controllers extraen identidad desde el token (no se loguea nadie “a mano”).
+
+Dominio tiene Usuario con keycloakId y datos de negocio.
+
+RepositorioUsuarios permite buscar por keycloakId y por nombreUsuario.
+
+- Cuando un usuario hace una accion, el controller obtiene su keycloakId desde el token y busca el Usuario en la base de datos.
+- Si no existe, lanza error 401.

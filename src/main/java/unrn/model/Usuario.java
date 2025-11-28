@@ -1,76 +1,168 @@
 package unrn.model;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "usuarios")
 public class Usuario {
-    static final String ERROR_NOMBRE_INVALIDO = "El nombre de usuario no puede ser vacío";
-    static final String ERROR_TWEET_NULO = "El tweet no puede ser vacío";
-    static final String ERROR_NOMBRE_DUPLICADO = "Ya existe un usuario con ese nombre";
-    static final String ERROR_NOMBRE_LONGITUD = "El nombre de usuario debe tener entre 5 y 25 caracteres";
 
-    private static final Set<String> nombresRegistrados = new HashSet<>();
+    // Mensajes de error
+    static final String ERROR_KEYCLOAK_ID_OBLIGATORIO = "El id de Keycloak no puede ser nulo ni vacío";
+    static final String ERROR_NOMBRE_OBLIGATORIO = "El nombre de usuario no puede ser nulo ni vacío";
+    static final String ERROR_EMAIL_OBLIGATORIO = "El email no puede ser nulo ni vacío";
+    static final String ERROR_FECHA_REGISTRO_OBLIGATORIA = "La fecha de registro no puede ser nula";
 
-    private final String nombre;
-    private final List<Tweet> tweets;
-    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public Usuario(String nombre) {
-        assertNombreValido(nombre);
-        assertNombreLongitud(nombre);
-        assertNombreUnico(nombre);
-        this.nombre = nombre;
-        this.tweets = new ArrayList<>();
-        nombresRegistrados.add(nombre);
+    @Column(name = "keycloak_id", nullable = false, unique = true, length = 64)
+    private String keycloakId;
+
+    @Column(name = "nombre_usuario", nullable = false, unique = true, length = 40)
+    private String nombreUsuario;
+
+    @Column(nullable = false, unique = true, length = 120)
+    private String email;
+
+    @Column(length = 280)
+    private String biografia;
+
+    @Column(name = "avatar_url", length = 255)
+    private String avatarUrl;
+
+    @Column(name = "fecha_registro", nullable = false)
+    private LocalDateTime fechaRegistro;
+
+    @Column(nullable = false)
+    private boolean activo;
+
+    // --- Constructor vacío para JPA (no usar desde el dominio) ---
+    protected Usuario() {
+        // solo para JPA
     }
 
-    public void publicarTweet(String mensaje) {
-        Tweet tweet = new Tweet(mensaje, this);
-        assertTweetNoNulo(tweet);
-        tweets.add(tweet);
+    // --- Constructor “de verdad” (dominio) ---
+    public Usuario(String keycloakId,
+            String nombreUsuario,
+            String email,
+            LocalDateTime fechaRegistro,
+            String biografia,
+            String avatarUrl) {
+
+        assertKeycloakIdValido(keycloakId);
+        assertNombreValido(nombreUsuario);
+        assertEmailValido(email);
+        assertFechaRegistroValida(fechaRegistro);
+
+        this.keycloakId = keycloakId;
+        this.nombreUsuario = nombreUsuario;
+        this.email = email;
+        this.fechaRegistro = fechaRegistro;
+        this.biografia = biografia;
+        this.avatarUrl = avatarUrl;
+        this.activo = true;
     }
 
-    public List<Tweet> tweetsRealizados() {
-        return Collections.unmodifiableList(tweets);
+    // --- Comportamiento de dominio (acorde al diagrama) ---
+
+    public Tweet publicarTweet(String contenido) {
+        return new Tweet(this, contenido, LocalDateTime.now(), false);
     }
 
-    // Elimina el usuario y sus tweets
-    public void eliminar() {
-        tweets.clear();
-        nombresRegistrados.remove(nombre);
+    public ReTweet retweet(Tweet original) {
+        if (original == null) {
+            throw new RuntimeException("El tweet original no puede ser nulo");
+        }
+        return new ReTweet(this, original, LocalDateTime.now());
     }
 
-    private void assertNombreValido(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            throw new RuntimeException(ERROR_NOMBRE_INVALIDO);
+    public RespuestaTweet responder(Tweet a, String contenido) {
+        if (a == null) {
+            throw new RuntimeException("El tweet a responder no puede ser nulo");
+        }
+        return new RespuestaTweet(this, a, contenido, LocalDateTime.now(), false);
+    }
+
+    public Follow seguir(Usuario a) {
+        if (a == null) {
+            throw new RuntimeException("El usuario a seguir no puede ser nulo");
+        }
+        if (a == this) {
+            throw new RuntimeException("Un usuario no puede seguirse a sí mismo");
+        }
+        return new Follow(this, a, LocalDateTime.now());
+    }
+
+    public void dejarDeSeguir(Usuario a) {
+        if (a == null || a == this) {
+            return;
+        }
+        // La eliminación concreta del Follow la hará el servicio/repositorio.
+    }
+
+    public Like darLike(Tweet a) {
+        if (a == null) {
+            throw new RuntimeException("El tweet a likear no puede ser nulo");
+        }
+        return new Like(this, a, LocalDateTime.now());
+    }
+
+    public void quitarLike(Tweet a) {
+        if (a == null) {
+            return;
+        }
+        // Igual que dejarDeSeguir: lo concreto lo maneja el servicio/repositorio.
+    }
+
+    public boolean estaActivo() {
+        return activo;
+    }
+
+    public void desactivar() {
+        this.activo = false;
+    }
+
+    public String nombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public String keycloakId() {
+        return keycloakId;
+    }
+
+    public Long id() {
+        return this.id;
+    }
+
+    public String avatarUrl() {
+        return this.avatarUrl;
+    }
+
+    // --- Validaciones privadas ---
+
+    private void assertKeycloakIdValido(String keycloakId) {
+        if (keycloakId == null || keycloakId.isBlank()) {
+            throw new RuntimeException(ERROR_KEYCLOAK_ID_OBLIGATORIO);
         }
     }
 
-    private void assertNombreLongitud(String nombre) {
-        int length = nombre.trim().length();
-        if (length < 5 || length > 25) {
-            throw new RuntimeException(ERROR_NOMBRE_LONGITUD);
+    private void assertNombreValido(String nombreUsuario) {
+        if (nombreUsuario == null || nombreUsuario.isBlank()) {
+            throw new RuntimeException(ERROR_NOMBRE_OBLIGATORIO);
         }
     }
 
-    private void assertNombreUnico(String nombre) {
-        if (nombresRegistrados.contains(nombre)) {
-            throw new RuntimeException(ERROR_NOMBRE_DUPLICADO);
+    private void assertEmailValido(String email) {
+        if (email == null || email.isBlank()) {
+            throw new RuntimeException(ERROR_EMAIL_OBLIGATORIO);
         }
     }
 
-    private void assertTweetNoNulo(Tweet tweet) {
-        if (tweet == null) {
-            throw new RuntimeException(ERROR_TWEET_NULO);
+    private void assertFechaRegistroValida(LocalDateTime fechaRegistro) {
+        if (fechaRegistro == null) {
+            throw new RuntimeException(ERROR_FECHA_REGISTRO_OBLIGATORIA);
         }
     }
-
-    public boolean equals(Usuario usuario) {
-        return nombre.equals(usuario.nombre);
-    }
-
-
 }

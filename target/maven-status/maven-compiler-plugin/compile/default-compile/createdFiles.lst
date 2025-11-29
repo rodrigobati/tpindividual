@@ -25,13 +25,17 @@ unrn\service\ServicioTimeline.class
 unrn\persistence\jpa\JpaRespuestasSpringData.class
 unrn\persistence\RepositorioLikes.class
 unrn\persistence\RepositorioRetweets.class
+unrn\minitwitter\config\SecurityConfig.class
 unrn\service\ServicioTweetsAplicacion.class
 unrn\persistence\RepositorioFollowsJpa.class
 unrn\persistence\RepositorioLikesJpa.class
+unrn\api\GlobalExceptionHandler.class
 unrn\persistence\RepositorioUsuarios.class
+unrn\api\dto\ErrorResponse.class
 unrn\persistence\jpa\JpaFollowsSpringData.class
 unrn\persistence\RepositorioRespuestasJpa.class
 unrn\persistence\jpa\JpaReTweetsSpringData.class
+unrn\minitwitter\config\OpenApi30Config.class
 unrn\model\Usuario.class
 unrn\api\SocialController.class
 unrn\persistence\RepositorioUsuariosJpa.class

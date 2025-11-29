@@ -1,0 +1,8 @@
+unrn\model\FollowTest.class
+unrn\model\ReTweetTest.class
+unrn\model\LikeTest.class
+unrn\api\SocialControllerIT.class
+unrn\model\RespuestaTweetTest.class
+unrn\model\TweetTest.class
+unrn\model\UsuarioTest.class
+unrn\api\TweetsControllerIT.class

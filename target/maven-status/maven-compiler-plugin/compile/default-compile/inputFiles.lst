@@ -1,3 +1,4 @@
+C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\api\dto\ErrorResponse.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\api\dto\LikeResponse.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\api\dto\PublicarTweetRequest.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\api\dto\ResponderTweetRequest.java
@@ -5,8 +6,11 @@ C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de 
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\api\dto\TimelineResponse.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\api\dto\TweetResponse.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\api\dto\UsuarioResponse.java
+C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\api\GlobalExceptionHandler.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\api\SocialController.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\api\TweetsController.java
+C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\minitwitter\config\OpenApi30Config.java
+C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\minitwitter\config\SecurityConfig.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\MiniTwitterApplication.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\model\Follow.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\tpindividual\src\main\java\unrn\model\Like.java

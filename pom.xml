@@ -53,11 +53,20 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
         </dependency>
+
+        <!-- PostgreSQL Driver (para producción) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.6</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- H2 Database (para testing) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- JUnit 5 -->
@@ -87,6 +96,13 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.1.0</version>
+</dependency>
+
+
     </dependencies>
 
     <build>
@@ -104,6 +120,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>unrn.MiniTwitterApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>

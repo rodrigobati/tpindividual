@@ -7,8 +7,11 @@ import unrn.api.dto.*;
 import unrn.model.Like;
 import unrn.model.RespuestaTweet;
 import unrn.model.Tweet;
+import unrn.model.Usuario;
+import unrn.persistence.RepositorioUsuarios;
 import unrn.service.ServicioTweets;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -17,10 +20,12 @@ import java.util.List;
 public class TweetsController {
 
     private final ServicioTweets servicioTweets;
+    private final RepositorioUsuarios repositorioUsuarios;
     private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    public TweetsController(ServicioTweets servicioTweets) {
+    public TweetsController(ServicioTweets servicioTweets, RepositorioUsuarios repositorioUsuarios) {
         this.servicioTweets = servicioTweets;
+        this.repositorioUsuarios = repositorioUsuarios;
     }
 
     // ----------- Endpoints -----------
@@ -30,6 +35,10 @@ public class TweetsController {
             @RequestBody PublicarTweetRequest request) {
 
         String keycloakId = jwt.getSubject();
+
+        // Asegurar que el usuario existe en la base de datos
+        asegurarUsuarioExiste(jwt);
+
         Tweet tweet = servicioTweets.publicarTweet(keycloakId, request.contenido());
         return toTweetResponse(tweet);
     }
@@ -38,6 +47,7 @@ public class TweetsController {
     public void retweet(@AuthenticationPrincipal Jwt jwt,
             @PathVariable Long idTweet) {
 
+        asegurarUsuarioExiste(jwt);
         String keycloakId = jwt.getSubject();
         servicioTweets.retweetear(keycloakId, idTweet);
     }
@@ -47,6 +57,7 @@ public class TweetsController {
             @PathVariable Long idTweet,
             @RequestBody ResponderTweetRequest request) {
 
+        asegurarUsuarioExiste(jwt);
         String keycloakId = jwt.getSubject();
         RespuestaTweet respuesta = servicioTweets.responderATweet(keycloakId, idTweet, request.contenido());
         return toRespuestaTweetResponse(respuesta);
@@ -56,6 +67,7 @@ public class TweetsController {
     public void eliminarTweet(@AuthenticationPrincipal Jwt jwt,
             @PathVariable Long idTweet) {
 
+        asegurarUsuarioExiste(jwt);
         String keycloakId = jwt.getSubject();
         servicioTweets.eliminarTweet(keycloakId, idTweet);
     }
@@ -64,6 +76,7 @@ public class TweetsController {
     public void eliminarRespuesta(@AuthenticationPrincipal Jwt jwt,
             @PathVariable Long idRespuesta) {
 
+        asegurarUsuarioExiste(jwt);
         String keycloakId = jwt.getSubject();
         servicioTweets.eliminarRespuesta(keycloakId, idRespuesta);
     }
@@ -72,6 +85,7 @@ public class TweetsController {
     public void darLike(@AuthenticationPrincipal Jwt jwt,
             @PathVariable Long idTweet) {
 
+        asegurarUsuarioExiste(jwt);
         String keycloakId = jwt.getSubject();
         servicioTweets.darLike(keycloakId, idTweet);
     }
@@ -80,6 +94,7 @@ public class TweetsController {
     public void quitarLike(@AuthenticationPrincipal Jwt jwt,
             @PathVariable Long idTweet) {
 
+        asegurarUsuarioExiste(jwt);
         String keycloakId = jwt.getSubject();
         servicioTweets.quitarLike(keycloakId, idTweet);
     }
@@ -88,6 +103,7 @@ public class TweetsController {
     public TimelineResponse timeline(@AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "50") int limite) {
 
+        asegurarUsuarioExiste(jwt);
         String keycloakId = jwt.getSubject();
         List<Tweet> tweets = servicioTweets.timeline(keycloakId, limite);
         List<TweetResponse> respuesta = tweets.stream()
@@ -149,5 +165,41 @@ public class TweetsController {
                 like.id(),
                 autor,
                 fecha);
+    }
+
+    // ----------- Gestión automática de usuarios -----------
+
+    /**
+     * Asegura que el usuario autenticado existe en la base de datos.
+     * Si no existe, lo crea automáticamente con datos del JWT.
+     */
+    private void asegurarUsuarioExiste(Jwt jwt) {
+        String keycloakId = jwt.getSubject();
+
+        // Si ya existe, no hacer nada
+        if (repositorioUsuarios.existePorKeycloakId(keycloakId)) {
+            return;
+        }
+
+        // Extraer información del JWT
+        String username = jwt.getClaimAsString("preferred_username");
+        String email = jwt.getClaimAsString("email");
+
+        // Si no hay email en el token, usar username@minitwitter.local
+        if (email == null || email.isBlank()) {
+            email = username + "@minitwitter.local";
+        }
+
+        // Crear el usuario
+        Usuario nuevoUsuario = new Usuario(
+                keycloakId,
+                username,
+                email,
+                LocalDateTime.now(),
+                null, // biografía vacía
+                null // avatar vacío
+        );
+
+        repositorioUsuarios.guardar(nuevoUsuario);
     }
 }

@@ -1,0 +1,1 @@
+# This file contains documentation related to the domain model classes in the project.

@@ -1,0 +1,221 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+
+paths:
+  /api/tests/{id}:
+    get:
+      tags:
+        - test-resource
+      summary: get  Test
+      operationId: getTest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestDTO"
+        4xx/5xx:
+          description: Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+      security:
+        - bearerAuth: []
+
+    put:
+      tags:
+        - test-resource
+      summary: update  Test
+      operationId: updateTest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        4xx/5xx:
+          description: Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+      security:
+        - bearerAuth: []
+
+    delete:
+      tags:
+        - test-resource
+      summary: delete by id
+      operationId: deleteTest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: No Content
+        4xx/5xx:
+          description: Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+      security:
+        - bearerAuth: []
+
+  /api/tests:
+    get:
+      tags:
+        - test-resource
+      summary: get all Test
+      operationId: getAllTests
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TestDTO"
+        4xx/5xx:
+          description: Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+      security:
+        - bearerAuth: []
+
+    post:
+      tags:
+        - test-resource
+      summary: create  Test
+      operationId: createTest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestDTO"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        4xx/5xx:
+          description: Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+      security:
+        - bearerAuth: []
+
+  /:
+    get:
+      tags:
+        - home-resource
+      operationId: index
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+        4xx/5xx:
+          description: Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        code:
+          type: string
+        message:
+          type: string
+        fieldErrors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApiFieldError"
+
+    ApiFieldError:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        property:
+          type: string
+        rejectedValue:
+          type: object
+        path:
+          type: string
+
+    TestDTO:
+      required:
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          maxLength: 255
+          minLength: 0
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://localhost:9090/realms/minitwitter/protocol/openid-connect/auth
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets

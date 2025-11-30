@@ -147,6 +147,30 @@ paths:
       security:
         - bearerAuth: []
 
+  /api/usuarios:
+    get:
+      tags:
+        - usuarios-controller
+      summary: Listar todos los usuarios del sistema
+      operationId: listarUsuarios
+      responses:
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UsuarioResponse"
+        4xx/5xx:
+          description: Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+      security:
+        - bearerAuth: []
+
   /:
     get:
       tags:
@@ -209,6 +233,20 @@ components:
           maxLength: 255
           minLength: 0
           type: string
+
+    UsuarioResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID interno del usuario
+        nombreUsuario:
+          type: string
+          description: Nombre de usuario (username)
+        avatarUrl:
+          type: string
+          description: URL del avatar del usuario (puede ser null)
 
   securitySchemes:
     bearerAuth:

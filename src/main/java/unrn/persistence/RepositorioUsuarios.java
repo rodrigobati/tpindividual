@@ -2,6 +2,8 @@ package unrn.persistence;
 
 import unrn.model.Usuario;
 
+import java.util.List;
+
 public interface RepositorioUsuarios {
 
     Usuario buscarPorId(Long idUsuario);
@@ -15,4 +17,6 @@ public interface RepositorioUsuarios {
     boolean existePorKeycloakId(String keycloakId);
 
     Usuario buscarPorKeycloakId(String keycloakId);
+
+    List<Usuario> listarTodos();
 }

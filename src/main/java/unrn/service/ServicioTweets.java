@@ -26,7 +26,26 @@ public interface ServicioTweets {
 
     void quitarLike(String keycloakIdAutor, Long idTweet);
 
-    List<Tweet> timeline(String keycloakIdUsuario, int limite);
+    /**
+     * Timeline del usuario: tweets propios + tweets de seguidos + retweets de
+     * seguidos.
+     * Retorna una lista unificada de items ordenados por fecha.
+     * 
+     * @param keycloakIdUsuario Identificador de Keycloak del usuario
+     * @param limite            Cantidad máxima de items a retornar
+     * @return Lista de items del timeline (tweets y retweets mezclados)
+     */
+    List<TimelineItem> timeline(String keycloakIdUsuario, int limite);
+
+    /**
+     * Obtiene todos los tweets y retweets de un usuario específico.
+     * Retorna tweets originales del usuario Y retweets hechos por ese usuario.
+     * 
+     * @param idUsuario ID del usuario
+     * @param limite    Cantidad máxima de items a retornar
+     * @return Lista de items (tweets y retweets) ordenados por fecha
+     */
+    List<TimelineItem> tweetsDeUsuario(Long idUsuario, int limite);
 
     List<RespuestaTweet> respuestasDeTweet(Long idTweet);
 

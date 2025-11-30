@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import unrn.api.dto.ErrorResponse;
+import unrn.api.exception.UsuarioNoEncontradoException;
 
 import java.time.LocalDateTime;
 
@@ -13,31 +14,40 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     /**
-     * Maneja las excepciones de dominio (RuntimeException genéricas)
-     * y las devuelve como 400 BAD_REQUEST con un cuerpo JSON prolijo.
+     * Maneja errores cuando un usuario no es encontrado.
+     * Retorna 404 NOT FOUND.
      */
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex,
+    @ExceptionHandler(UsuarioNoEncontradoException.class)
+    public ResponseEntity<ErrorResponse> handleUsuarioNoEncontrado(
+            UsuarioNoEncontradoException ex,
             HttpServletRequest request) {
-
-        HttpStatus status = HttpStatus.BAD_REQUEST;
 
         ErrorResponse body = new ErrorResponse(
                 LocalDateTime.now(),
-                status.value(),
-                status.getReasonPhrase(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
                 ex.getMessage(),
                 request.getRequestURI());
 
-        return ResponseEntity.status(status).body(body);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
-    // Si más adelante querés distinguir otros tipos:
-    //
-    // @ExceptionHandler(AccessDeniedException.class)
-    // public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException
-    // ex, HttpServletRequest request) { ... }
-    //
-    // @ExceptionHandler(MethodArgumentNotValidException.class)
-    // public ResponseEntity<ErrorResponse> handleValidation(...) { ... }
+    /**
+     * Maneja RuntimeException genéricas (errores de validación/negocio).
+     * Retorna 400 BAD REQUEST.
+     */
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeException(
+            RuntimeException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse body = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
 }

@@ -1,8 +1,11 @@
 package unrn.persistence;
 
 import org.springframework.stereotype.Repository;
+import unrn.api.exception.UsuarioNoEncontradoException;
 import unrn.model.Usuario;
 import unrn.persistence.jpa.JpaUsuariosSpringData;
+
+import java.util.List;
 
 @Repository
 public class RepositorioUsuariosJpa implements RepositorioUsuarios {
@@ -16,7 +19,7 @@ public class RepositorioUsuariosJpa implements RepositorioUsuarios {
     @Override
     public Usuario buscarPorId(Long idUsuario) {
         return jpa.findById(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + idUsuario));
+                .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario no encontrado: " + idUsuario));
     }
 
     @Override
@@ -32,7 +35,7 @@ public class RepositorioUsuariosJpa implements RepositorioUsuarios {
     @Override
     public Usuario buscarPorNombreUsuario(String nombreUsuario) {
         return jpa.findByNombreUsuario(nombreUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + nombreUsuario));
+                .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario no encontrado: " + nombreUsuario));
     }
 
     @Override
@@ -43,6 +46,12 @@ public class RepositorioUsuariosJpa implements RepositorioUsuarios {
     @Override
     public Usuario buscarPorKeycloakId(String keycloakId) {
         return jpa.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado para keycloakId: " + keycloakId));
+                .orElseThrow(
+                        () -> new UsuarioNoEncontradoException("Usuario no encontrado para keycloakId: " + keycloakId));
+    }
+
+    @Override
+    public List<Usuario> listarTodos() {
+        return jpa.findAll();
     }
 }

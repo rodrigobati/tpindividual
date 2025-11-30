@@ -51,6 +51,23 @@ public class ReTweet {
         return this.original == posibleOriginal;
     }
 
+    // Accesores para exponer información al exterior (DTOs, servicios)
+    public Long id() {
+        return this.id;
+    }
+
+    public Usuario autor() {
+        return this.autor;
+    }
+
+    public Tweet original() {
+        return this.original;
+    }
+
+    public java.time.LocalDateTime fechaCreacion() {
+        return this.fechaCreacion;
+    }
+
     private void assertAutorValido(Usuario autor) {
         if (autor == null) {
             throw new RuntimeException(ERROR_AUTOR_RETWEET_OBLIGATORIO);

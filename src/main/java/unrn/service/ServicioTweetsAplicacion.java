@@ -22,18 +22,21 @@ public class ServicioTweetsAplicacion implements ServicioTweets {
     private final RepositorioRetweets repositorioRetweets;
     private final RepositorioRespuestas repositorioRespuestas;
     private final RepositorioLikes repositorioLikes;
+    private final ServicioSocial servicioSocial;
 
     public ServicioTweetsAplicacion(RepositorioUsuarios repositorioUsuarios,
             RepositorioTweets repositorioTweets,
             RepositorioRetweets repositorioRetweets,
             RepositorioRespuestas repositorioRespuestas,
-            RepositorioLikes repositorioLikes) {
+            RepositorioLikes repositorioLikes,
+            ServicioSocial servicioSocial) {
 
         this.repositorioUsuarios = repositorioUsuarios;
         this.repositorioTweets = repositorioTweets;
         this.repositorioRetweets = repositorioRetweets;
         this.repositorioRespuestas = repositorioRespuestas;
         this.repositorioLikes = repositorioLikes;
+        this.servicioSocial = servicioSocial;
     }
 
     @Override
@@ -47,6 +50,19 @@ public class ServicioTweetsAplicacion implements ServicioTweets {
     public ReTweet retweetear(String keycloakIdAutor, Long idTweetOriginal) {
         Usuario autor = repositorioUsuarios.buscarPorKeycloakId(keycloakIdAutor);
         Tweet original = repositorioTweets.buscarPorId(idTweetOriginal);
+
+        // Regla de negocio: No permitir retweets duplicados (idempotencia)
+        if (repositorioRetweets.existeRetweetDeUsuarioSobreTweet(autor, original)) {
+            // Ya existe un retweet de este usuario sobre este tweet
+            // Estrategia: idempotencia - devolver existente sin error
+            List<ReTweet> retweets = repositorioRetweets.retweetsDeUsuario(autor);
+            return retweets.stream()
+                    .filter(rt -> rt.esSobre(original))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Inconsistencia: retweet existe pero no se encuentra"));
+        }
+
+        // Crear y guardar nuevo retweet
         ReTweet retweet = autor.retweet(original);
         return repositorioRetweets.guardar(retweet);
     }
@@ -121,9 +137,79 @@ public class ServicioTweetsAplicacion implements ServicioTweets {
     }
 
     @Override
-    public List<Tweet> timeline(String keycloakIdUsuario, int limite) {
+    public List<TimelineItem> timeline(String keycloakIdUsuario, int limite) {
         Usuario usuario = repositorioUsuarios.buscarPorKeycloakId(keycloakIdUsuario);
-        return repositorioTweets.timelineDeUsuario(usuario, limite);
+
+        // Obtener usuarios seguidos por el usuario actual
+        List<Usuario> seguidos = servicioSocial.seguidosDelActual(keycloakIdUsuario);
+
+        // Crear lista de autores: usuario actual + usuarios seguidos
+        List<Usuario> autoresDelTimeline = new java.util.ArrayList<>();
+        autoresDelTimeline.add(usuario); // El usuario ve sus propios tweets
+        autoresDelTimeline.addAll(seguidos); // Más los tweets de quienes sigue
+
+        // Buscar tweets originales de todos esos autores
+        List<Tweet> tweets = repositorioTweets.buscarTweetsDeAutores(autoresDelTimeline, limite);
+
+        // Buscar retweets hechos por esos autores
+        List<ReTweet> retweets = repositorioRetweets.buscarRetweetsDeAutores(autoresDelTimeline, limite);
+
+        // Combinar tweets y retweets en una lista unificada
+        List<TimelineItem> items = new java.util.ArrayList<>();
+
+        // Agregar tweets como TimelineItem
+        for (Tweet tweet : tweets) {
+            items.add(TimelineItem.deTweet(tweet));
+        }
+
+        // Agregar retweets como TimelineItem
+        for (ReTweet retweet : retweets) {
+            items.add(TimelineItem.deRetweet(retweet));
+        }
+
+        // Ordenar por fecha descendente (más recientes primero)
+        items.sort((a, b) -> b.getFechaParaOrdenamiento().compareTo(a.getFechaParaOrdenamiento()));
+
+        // Limitar al número solicitado
+        if (items.size() > limite) {
+            items = items.subList(0, limite);
+        }
+
+        return items;
+    }
+
+    @Override
+    public List<TimelineItem> tweetsDeUsuario(Long idUsuario, int limite) {
+        Usuario usuario = repositorioUsuarios.buscarPorId(idUsuario);
+
+        // Buscar tweets originales del usuario
+        List<Tweet> tweets = repositorioTweets.buscarTweetsDeAutores(List.of(usuario), limite);
+
+        // Buscar retweets hechos por el usuario
+        List<ReTweet> retweets = repositorioRetweets.buscarRetweetsDeAutores(List.of(usuario), limite);
+
+        // Combinar tweets y retweets en una lista unificada
+        List<TimelineItem> items = new java.util.ArrayList<>();
+
+        // Agregar tweets como TimelineItem
+        for (Tweet tweet : tweets) {
+            items.add(TimelineItem.deTweet(tweet));
+        }
+
+        // Agregar retweets como TimelineItem
+        for (ReTweet retweet : retweets) {
+            items.add(TimelineItem.deRetweet(retweet));
+        }
+
+        // Ordenar por fecha descendente (más recientes primero)
+        items.sort((a, b) -> b.getFechaParaOrdenamiento().compareTo(a.getFechaParaOrdenamiento()));
+
+        // Limitar al número solicitado
+        if (items.size() > limite) {
+            items = items.subList(0, limite);
+        }
+
+        return items;
     }
 
     @Override

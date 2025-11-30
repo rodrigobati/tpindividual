@@ -1,10 +1,13 @@
 package unrn.persistence;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import unrn.model.Tweet;
 import unrn.model.Usuario;
 import unrn.persistence.jpa.JpaTweetsSpringData;
 
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -43,5 +46,15 @@ public class RepositorioTweetsJpa implements RepositorioTweets {
         // Más adelante, podés armar un JPQL que incluya seguidos.
         var todos = jpa.findByAutorOrderByFechaCreacionDesc(usuario);
         return todos.size() > limite ? todos.subList(0, limite) : todos;
+    }
+
+    @Override
+    public List<Tweet> buscarTweetsDeAutores(List<Usuario> autores, int limite) {
+        if (autores == null || autores.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Pageable pageable = PageRequest.of(0, limite);
+        return jpa.findByAutorInOrderByFechaCreacionDesc(autores, pageable);
     }
 }

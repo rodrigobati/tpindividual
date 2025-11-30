@@ -5,6 +5,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import unrn.model.Usuario;
+import unrn.persistence.RepositorioTweets;
 import unrn.persistence.RepositorioUsuarios;
 
 import java.time.LocalDateTime;
@@ -17,9 +18,12 @@ import java.time.LocalDateTime;
 public class ServicioUsuariosAplicacion implements ServicioUsuarios {
 
     private final RepositorioUsuarios repositorioUsuarios;
+    private final RepositorioTweets repositorioTweets;
 
-    public ServicioUsuariosAplicacion(RepositorioUsuarios repositorioUsuarios) {
+    public ServicioUsuariosAplicacion(RepositorioUsuarios repositorioUsuarios,
+            RepositorioTweets repositorioTweets) {
         this.repositorioUsuarios = repositorioUsuarios;
+        this.repositorioTweets = repositorioTweets;
     }
 
     /**
@@ -78,5 +82,35 @@ public class ServicioUsuariosAplicacion implements ServicioUsuarios {
                             "' o email '" + email + "' ya están en uso",
                     e);
         }
+    }
+
+    /**
+     * Desactiva un usuario y marca todos sus tweets como eliminados.
+     * 
+     * Esta operación mantiene la invariante de dominio:
+     * "Los tweets de un usuario deben eliminarse cuando el usuario es eliminado."
+     * 
+     * Arquitectura DDD:
+     * - Usuario.desactivar() maneja el estado del agregado Usuario
+     * - El servicio de aplicación orquesta la eliminación de tweets
+     * - NO se inyecta repositorio en la entidad (anti-patrón)
+     * 
+     * Garantías:
+     * - Operación atómica (transaccional)
+     * - Si falla eliminación de tweets, rollback completo
+     * - No quedan tweets huérfanos de usuarios inactivos
+     */
+    @Override
+    @Transactional
+    public void desactivarUsuario(String keycloakId) {
+        Usuario usuario = repositorioUsuarios.buscarPorKeycloakId(keycloakId);
+
+        // 1. Desactivar usuario (cambio de estado en el agregado)
+        usuario.desactivar();
+        repositorioUsuarios.guardar(usuario);
+
+        // 2. Marcar todos sus tweets como eliminados (orquestación desde servicio)
+        // Esto mantiene la invariante: no pueden existir tweets de usuarios inactivos
+        repositorioTweets.marcarTweetsComoEliminadosDe(usuario.id());
     }
 }

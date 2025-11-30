@@ -57,8 +57,9 @@ class RespuestaTweetTest {
         @Test
         @DisplayName("Eliminar respuesta cambia su estado a eliminado")
         void eliminar_respuestaActiva_cambiaEstado() {
-                Usuario autorTweet = new Usuario("kc-a1", "autor", "a@x.com", LocalDateTime.now(), null, null);
-                Usuario autorRespuesta = new Usuario("kc-b1", "resp", "r@x.com", LocalDateTime.now(), null, null);
+                Usuario autorTweet = new Usuario("kc-a1", "autor_tweet1", "a@x.com", LocalDateTime.now(), null, null);
+                Usuario autorRespuesta = new Usuario("kc-b1", "autor_resp1", "r@x.com", LocalDateTime.now(), null,
+                                null);
                 Tweet tweetOriginal = new Tweet(autorTweet, "T", LocalDateTime.now(), false);
                 RespuestaTweet respuesta = new RespuestaTweet(autorRespuesta, tweetOriginal, "Respuesta",
                                 LocalDateTime.now(), false);

@@ -1,11 +1,11 @@
 unrn\model\FollowTest.class
 unrn\api\RetweetControllerIT.class
 unrn\model\ReTweetTest.class
-unrn\model\LikeTest.class
 unrn\api\SocialControllerIT.class
 unrn\service\ServicioTweetsAplicacionRetweetTest.class
-unrn\model\RespuestaTweetTest.class
 unrn\model\TweetTest.class
+unrn\model\LikeTest.class
+unrn\model\RespuestaTweetTest.class
 unrn\model\UsuarioTest.class
 unrn\api\TimelineConRetweetsIT.class
 unrn\api\TweetsControllerIT.class

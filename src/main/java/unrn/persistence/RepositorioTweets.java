@@ -24,4 +24,13 @@ public interface RepositorioTweets {
      * @return Lista de tweets ordenados por fecha de creación descendente
      */
     List<Tweet> buscarTweetsDeAutores(List<Usuario> autores, int limite);
+
+    /**
+     * Marca como eliminados todos los tweets de un usuario.
+     * Mantiene la invariante de dominio: tweets no pueden existir sin usuario
+     * activo.
+     * 
+     * @param idUsuario ID del usuario cuyos tweets deben marcarse como eliminados
+     */
+    void marcarTweetsComoEliminadosDe(Long idUsuario);
 }

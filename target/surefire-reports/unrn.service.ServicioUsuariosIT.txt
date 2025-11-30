@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
-Test set: unrn.model.UsuarioTest
+Test set: unrn.service.ServicioUsuariosIT
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in unrn.model.UsuarioTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.546 s -- in unrn.service.ServicioUsuariosIT

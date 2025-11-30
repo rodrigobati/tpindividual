@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
-Test set: unrn.model.UsuarioTest
+Test set: unrn.model.LikeTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in unrn.model.UsuarioTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in unrn.model.LikeTest

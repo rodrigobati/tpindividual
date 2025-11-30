@@ -26,7 +26,8 @@ class ReTweetTest {
         @Test
         @DisplayName("Crear retweet con autor nulo lanza excepción")
         void crearReTweet_autorNulo_lanzaExcepcion() {
-                Tweet original = new Tweet(new Usuario("kc-c", "a", "a@x.com", LocalDateTime.now(), null, null), "x",
+                Tweet original = new Tweet(
+                                new Usuario("kc-c", "autor_tweet", "a@x.com", LocalDateTime.now(), null, null), "x",
                                 LocalDateTime.now(), false);
 
                 var ex = assertThrows(RuntimeException.class, () -> new ReTweet(null, original, LocalDateTime.now()));
@@ -36,7 +37,7 @@ class ReTweetTest {
         @Test
         @DisplayName("Crear retweet con tweet original nulo lanza excepción")
         void crearReTweet_tweetOriginalNulo_lanzaExcepcion() {
-                Usuario retweeter = new Usuario("kc-d", "r", "r@x.com", LocalDateTime.now(), null, null);
+                Usuario retweeter = new Usuario("kc-d", "retweeter1", "r@x.com", LocalDateTime.now(), null, null);
 
                 var ex = assertThrows(RuntimeException.class, () -> new ReTweet(retweeter, null, LocalDateTime.now()));
                 assertEquals(ReTweet.ERROR_TWEET_ORIGINAL_OBLIGATORIO, ex.getMessage());

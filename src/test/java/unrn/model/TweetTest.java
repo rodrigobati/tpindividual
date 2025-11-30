@@ -36,9 +36,9 @@ class TweetTest {
         }
 
         @Test
-        @DisplayName("Crear tweet con contenido nulo o vacío lanza excepción")
+        @DisplayName("Crear tweet con contenido inválido lanza excepción")
         void crearTweet_contenidoInvalido_lanzaExcepcion() {
-                Usuario autor = new Usuario("kc-b", "ana", "ana@example.com", LocalDateTime.now(), null, null);
+                Usuario autor = new Usuario("kc-a", "autor_test", "a@example.com", LocalDateTime.now(), null, null);
 
                 var ex1 = assertThrows(RuntimeException.class,
                                 () -> new Tweet(autor, null, LocalDateTime.now(), false));

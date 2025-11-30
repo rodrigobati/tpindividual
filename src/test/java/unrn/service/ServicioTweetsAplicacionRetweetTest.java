@@ -132,8 +132,8 @@ class ServicioTweetsAplicacionRetweetTest {
     }
 
     @Test
-    @DisplayName("retweetear() permite que un usuario retweetee su propio tweet")
-    void retweetear_tweetPropio_permitido() {
+    @DisplayName("retweetear() lanza OperacionNoPermitidaException cuando usuario intenta retweet de tweet propio")
+    void retweetear_tweetPropio_lanzaExcepcion() {
         // Arrange
         String keycloakId = "keycloak-autor";
         Long idTweet = 1L;
@@ -142,21 +142,13 @@ class ServicioTweetsAplicacionRetweetTest {
                 .thenReturn(usuarioAutor);
         when(repositorioTweets.buscarPorId(idTweet))
                 .thenReturn(tweetOriginal);
-        when(repositorioRetweets.existeRetweetDeUsuarioSobreTweet(usuarioAutor, tweetOriginal))
-                .thenReturn(false);
 
-        ReTweet retweetPropio = new ReTweet(usuarioAutor, tweetOriginal, LocalDateTime.now());
-        when(repositorioRetweets.guardar(any(ReTweet.class)))
-                .thenReturn(retweetPropio);
+        // Act & Assert
+        var excepcion = assertThrows(unrn.api.exception.OperacionNoPermitidaException.class,
+                () -> servicio.retweetear(keycloakId, idTweet));
 
-        // Act
-        ReTweet resultado = servicio.retweetear(keycloakId, idTweet);
-
-        // Assert
-        assertNotNull(resultado);
-        assertTrue(resultado.esDe(usuarioAutor));
-        assertTrue(resultado.esSobre(tweetOriginal));
-        verify(repositorioRetweets).guardar(any(ReTweet.class));
+        assertEquals("No se puede hacer retweet de un tweet propio", excepcion.getMessage());
+        verify(repositorioRetweets, never()).guardar(any()); // NO debe intentar guardar
     }
 
     @Test

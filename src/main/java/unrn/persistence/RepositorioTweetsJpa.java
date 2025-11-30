@@ -57,4 +57,9 @@ public class RepositorioTweetsJpa implements RepositorioTweets {
         Pageable pageable = PageRequest.of(0, limite);
         return jpa.findByAutorInOrderByFechaCreacionDesc(autores, pageable);
     }
+
+    @Override
+    public void marcarTweetsComoEliminadosDe(Long idUsuario) {
+        jpa.marcarTweetsComoEliminadosDe(idUsuario);
+    }
 }

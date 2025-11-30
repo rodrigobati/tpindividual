@@ -30,6 +30,15 @@ public interface JpaTweetsSpringData extends JpaRepository<Tweet, Long> {
     List<Tweet> findByAutorInOrderByFechaCreacionDesc(@Param("autores") List<Usuario> autores, Pageable pageable);
 
     /**
+     * Busca TODOS los tweets del sistema que NO estén eliminados, ordenados por
+     * fecha descendente.
+     * Usa Pageable para limitar resultados.
+     * Usado para la vista "Ver todos" en Home Page.
+     */
+    @Query("SELECT t FROM Tweet t WHERE t.eliminado = false ORDER BY t.fechaCreacion DESC")
+    List<Tweet> findAllByOrderByFechaCreacionDesc(Pageable pageable);
+
+    /**
      * Marca como eliminados todos los tweets de un usuario.
      * Operación transaccional que mantiene la invariante de dominio:
      * "Los tweets de un usuario deben eliminarse cuando el usuario es eliminado."

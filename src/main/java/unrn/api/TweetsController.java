@@ -97,6 +97,10 @@ public class TweetsController {
         servicioTweets.quitarLike(keycloakId, idTweet);
     }
 
+    /**
+     * Obtiene el timeline personalizado del usuario autenticado
+     * (tweets de personas que sigue + retweets)
+     */
     @GetMapping("/timeline")
     public TimelineResponse timeline(@AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "50") int limite) {
@@ -107,6 +111,21 @@ public class TweetsController {
 
         List<TweetResponse> respuesta = items.stream()
                 .map(this::timelineItemToTweetResponse)
+                .toList();
+        return new TimelineResponse(respuesta);
+    }
+
+    /**
+     * Obtiene TODOS los tweets del sistema (sin filtrar por seguimiento)
+     * Usado para la vista "Ver todos" en Home Page
+     * Solo devuelve tweets originales, sin retweets
+     */
+    @GetMapping
+    public TimelineResponse todosTweets(@RequestParam(defaultValue = "100") int limite) {
+        List<Tweet> tweets = servicioTweets.obtenerTodosTweets(limite);
+
+        List<TweetResponse> respuesta = tweets.stream()
+                .map(this::toTweetResponse)
                 .toList();
         return new TimelineResponse(respuesta);
     }

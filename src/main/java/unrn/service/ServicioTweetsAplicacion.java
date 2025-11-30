@@ -185,6 +185,13 @@ public class ServicioTweetsAplicacion implements ServicioTweets {
     }
 
     @Override
+    public List<Tweet> obtenerTodosTweets(int limite) {
+        // Buscar TODOS los tweets del sistema sin filtrar por autor
+        // Solo tweets originales, ordenados por fecha descendente
+        return repositorioTweets.buscarTodosTweets(limite);
+    }
+
+    @Override
     public List<TimelineItem> tweetsDeUsuario(Long idUsuario, int limite) {
         Usuario usuario = repositorioUsuarios.buscarPorId(idUsuario);
 

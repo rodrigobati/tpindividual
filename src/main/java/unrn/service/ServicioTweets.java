@@ -38,6 +38,16 @@ public interface ServicioTweets {
     List<TimelineItem> timeline(String keycloakIdUsuario, int limite);
 
     /**
+     * Obtiene TODOS los tweets del sistema (sin filtrar por seguimiento).
+     * Solo retorna tweets originales, NO incluye retweets.
+     * Ordenados por fecha de creación descendente (más reciente primero).
+     * 
+     * @param limite Cantidad máxima de tweets a retornar
+     * @return Lista de tweets originales ordenados por fecha
+     */
+    List<Tweet> obtenerTodosTweets(int limite);
+
+    /**
      * Obtiene todos los tweets y retweets de un usuario específico.
      * Retorna tweets originales del usuario Y retweets hechos por ese usuario.
      * 

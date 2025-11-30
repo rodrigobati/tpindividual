@@ -59,6 +59,14 @@ public class RepositorioTweetsJpa implements RepositorioTweets {
     }
 
     @Override
+    public List<Tweet> buscarTodosTweets(int limite) {
+        // Buscar TODOS los tweets del sistema sin filtrar por autor
+        // Ordenados por fecha descendente, limitados
+        Pageable pageable = PageRequest.of(0, limite);
+        return jpa.findAllByOrderByFechaCreacionDesc(pageable);
+    }
+
+    @Override
     public void marcarTweetsComoEliminadosDe(Long idUsuario) {
         jpa.marcarTweetsComoEliminadosDe(idUsuario);
     }

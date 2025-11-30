@@ -10,6 +10,7 @@ public class Usuario {
     // Mensajes de error
     static final String ERROR_KEYCLOAK_ID_OBLIGATORIO = "El id de Keycloak no puede ser nulo ni vacío";
     static final String ERROR_NOMBRE_OBLIGATORIO = "El nombre de usuario no puede ser nulo ni vacío";
+    static final String ERROR_NOMBRE_LONGITUD = "El nombre de usuario debe tener entre 5 y 25 caracteres";
     static final String ERROR_EMAIL_OBLIGATORIO = "El email no puede ser nulo ni vacío";
     static final String ERROR_FECHA_REGISTRO_OBLIGATORIA = "La fecha de registro no puede ser nula";
 
@@ -151,6 +152,9 @@ public class Usuario {
     private void assertNombreValido(String nombreUsuario) {
         if (nombreUsuario == null || nombreUsuario.isBlank()) {
             throw new RuntimeException(ERROR_NOMBRE_OBLIGATORIO);
+        }
+        if (nombreUsuario.length() < 5 || nombreUsuario.length() > 25) {
+            throw new RuntimeException(ERROR_NOMBRE_LONGITUD);
         }
     }
 

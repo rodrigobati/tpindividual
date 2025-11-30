@@ -37,10 +37,35 @@ class UsuarioTest {
         }
 
         @Test
+        @DisplayName("Usuario constructor lanza si nombre muy corto (menos de 5 caracteres)")
+        void constructor_nombre_muy_corto_lanza() {
+                // Setup
+                var fecha = LocalDateTime.now();
+
+                // Ejercitación & Verificación
+                var ex = assertThrows(RuntimeException.class,
+                                () -> new Usuario("kc-3", "ana", "a@x.com", fecha, "bio", "avatar"));
+                assertEquals(Usuario.ERROR_NOMBRE_LONGITUD, ex.getMessage());
+        }
+
+        @Test
+        @DisplayName("Usuario constructor lanza si nombre muy largo (más de 25 caracteres)")
+        void constructor_nombre_muy_largo_lanza() {
+                // Setup
+                var fecha = LocalDateTime.now();
+                var nombreLargo = "abcdefghijklmnopqrstuvwxyz"; // 26 caracteres
+
+                // Ejercitación & Verificación
+                var ex = assertThrows(RuntimeException.class,
+                                () -> new Usuario("kc-4", nombreLargo, "a@x.com", fecha, "bio", "avatar"));
+                assertEquals(Usuario.ERROR_NOMBRE_LONGITUD, ex.getMessage());
+        }
+
+        @Test
         @DisplayName("Usuario puede publicar tweet con contenido valido")
         void publicarTweet_creaTweet_valido() {
                 // Setup
-                var u = new Usuario("kc-2", "ana", "a@x.com", LocalDateTime.now(), "bio", null);
+                var u = new Usuario("kc-2", "anita", "a@x.com", LocalDateTime.now(), "bio", null);
 
                 // Ejercitación
                 var tweet = u.publicarTweet("Hola mundo");

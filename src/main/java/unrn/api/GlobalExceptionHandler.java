@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import unrn.api.dto.ErrorResponse;
+import unrn.api.exception.OperacionNoPermitidaException;
 import unrn.api.exception.UsuarioNoEncontradoException;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,25 @@ public class GlobalExceptionHandler {
                 request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    /**
+     * Maneja operaciones no permitidas por las reglas de negocio.
+     * Retorna 422 UNPROCESSABLE ENTITY.
+     */
+    @ExceptionHandler(OperacionNoPermitidaException.class)
+    public ResponseEntity<ErrorResponse> handleOperacionNoPermitida(
+            OperacionNoPermitidaException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse body = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                HttpStatus.UNPROCESSABLE_ENTITY.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
     }
 
     /**

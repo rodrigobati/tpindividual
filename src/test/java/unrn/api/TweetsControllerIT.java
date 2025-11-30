@@ -21,6 +21,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.containsString;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -76,5 +77,35 @@ class TweetsControllerIT {
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.tweets[0].autor").value("rodrigo"))
                                 .andExpect(jsonPath("$.tweets[0].contenido").value("hola mini twitter"));
+        }
+
+        @Test
+        @DisplayName("No permite hacer retweet de un tweet propio")
+        void no_permite_retweet_de_tweet_propio() throws Exception {
+                // arrange: crear usuario y su tweet
+                String keycloakId = "keycloak-user-456";
+
+                Usuario usuario = new Usuario(
+                                keycloakId,
+                                "agustingui",
+                                "agustin@example.com",
+                                LocalDateTime.now(),
+                                "mi bio",
+                                null);
+                repositorioUsuarios.guardar(usuario);
+
+                // Crear un tweet del mismo usuario
+                Tweet tweet = usuario.publicarTweet("Este es mi tweet");
+                repositorioTweets.guardar(tweet);
+
+                // act + assert: intentar hacer retweet del propio tweet debe fallar con 422
+                mockMvc.perform(post("/api/tweets/" + tweet.id() + "/retweets")
+                                .with(jwt().jwt(jwt -> jwt
+                                                .subject(keycloakId)
+                                                .claim("preferred_username", "agustingui")))
+                                .contentType(APPLICATION_JSON))
+                                .andExpect(status().isUnprocessableEntity())
+                                .andExpect(jsonPath("$.message",
+                                                containsString("No se puede hacer retweet de un tweet propio")));
         }
 }

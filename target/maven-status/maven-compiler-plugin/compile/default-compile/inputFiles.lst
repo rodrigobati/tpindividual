@@ -7,6 +7,7 @@ C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de 
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\Proyecto TP individual\tpindividual\src\main\java\unrn\api\dto\TimelineResponse.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\Proyecto TP individual\tpindividual\src\main\java\unrn\api\dto\TweetResponse.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\Proyecto TP individual\tpindividual\src\main\java\unrn\api\dto\UsuarioResponse.java
+C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\Proyecto TP individual\tpindividual\src\main\java\unrn\api\exception\OperacionNoPermitidaException.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\Proyecto TP individual\tpindividual\src\main\java\unrn\api\exception\UsuarioNoEncontradoException.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\Proyecto TP individual\tpindividual\src\main\java\unrn\api\GlobalExceptionHandler.java
 C:\Users\pelud\OneDrive\Documentos\UNRN\Taller de Tecnologías y Producción de Software\Proyecto TP individual\tpindividual\src\main\java\unrn\api\SocialController.java

@@ -1,6 +1,7 @@
 package unrn.service;
 
 import org.springframework.stereotype.Service;
+import unrn.api.exception.OperacionNoPermitidaException;
 import unrn.model.Like;
 import unrn.model.RespuestaTweet;
 import unrn.model.ReTweet;
@@ -50,6 +51,11 @@ public class ServicioTweetsAplicacion implements ServicioTweets {
     public ReTweet retweetear(String keycloakIdAutor, Long idTweetOriginal) {
         Usuario autor = repositorioUsuarios.buscarPorKeycloakId(keycloakIdAutor);
         Tweet original = repositorioTweets.buscarPorId(idTweetOriginal);
+
+        // Regla de negocio: No permitir retweet de tweets propios
+        if (original.esDe(autor)) {
+            throw new OperacionNoPermitidaException("No se puede hacer retweet de un tweet propio");
+        }
 
         // Regla de negocio: No permitir retweets duplicados (idempotencia)
         if (repositorioRetweets.existeRetweetDeUsuarioSobreTweet(autor, original)) {
